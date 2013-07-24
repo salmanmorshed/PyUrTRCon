@@ -1,6 +1,6 @@
 #! /usr/bin/python
 
-import sys, cmd, socket, readline
+import sys, cmd, socket
 
 class Console(cmd.Cmd):
 
