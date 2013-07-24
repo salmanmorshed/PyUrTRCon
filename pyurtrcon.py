@@ -4,7 +4,7 @@ import sys, cmd, socket, readline
 
 class Console(cmd.Cmd):
 
-  magic = "\377\377\377\377"
+	magic = "\377\377\377\377"
 	server_host = "localhost"
 	server_port = 27960
 	rcon_password = ""
