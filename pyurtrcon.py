@@ -13,8 +13,8 @@ class Console(cmd.Cmd):
 
 	def __init__(self) :
 		cmd.Cmd.__init__(self)
-		self.prompt = "\n>> "
-		self.intro  = "Welcome to PyUrTRCon. Type help for support."
+		self.prompt = "\n-> "
+		self.intro  = "\nWelcome to PyUrTRCon. Type help for support."
 
 
 	def do_gameserver(self, args) :
@@ -39,10 +39,13 @@ class Console(cmd.Cmd):
 		try:
 			socket_handle = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 			socket_handle.connect((self.server_host, self.server_port))
+			socket_handle.settimeout(5)
 			socket_handle.send(self.magic + "rcon " + self.rcon_password + " " + args)
 			(response, address) = socket_handle.recvfrom(1024)
 			socket_handle.close()
-			print re.sub(r'\^.', '', response.split("\n")[1])
+			formatted_response = re.sub(r'\^.', '', response.split("\n")[1])
+			if len(formatted_response) :
+				print formatted_response
 		except Exception, e:
 			print "Error encountered! Details: " + str(e)
 
