@@ -1,6 +1,6 @@
 #! /dev/null
 
-# Contains all the commands that RCon supports to provide tab-complete support.
+# Contains all the commands that RCon supports to provide tab-completion.
 
 export_data = [
 	"g_nextmap",
