@@ -1,6 +1,6 @@
 #! /usr/bin/python
 
-import sys, cmd, socket
+import sys, cmd, socket, readline, re
 
 class Console(cmd.Cmd):
 
@@ -37,13 +37,13 @@ class Console(cmd.Cmd):
 		"""Send RCon commands to UrT server."""
 		try:
 			socket_handle = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-			socket_handle.connect(("urtbd.com", 2222))
+			socket_handle.connect((self.server_host, self.server_port))
 			socket_handle.send(self.magic + "rcon " + self.rcon_password + " " + args)
 			(response, address) = socket_handle.recvfrom(1024)
 			socket_handle.close()
-			print response.split("\n")[1]
+			print re.sub(r'\^.', '', response.split("\n")[1])
 		except Exception, e:
-			print "Connection failed! Details: " + str(e)
+			print "Error encountered! Details: " + str(e)
 
 
 	def do_history(self, args) :
