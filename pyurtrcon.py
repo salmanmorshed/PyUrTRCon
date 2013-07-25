@@ -8,13 +8,14 @@ class Console(cmd.Cmd):
 	server_host = "localhost"
 	server_port = 27960
 	rcon_password = ""
+	commands = []
 
 
 	def __init__(self) :
 		cmd.Cmd.__init__(self)
 		self.prompt = "\n> "
 		self.intro  = "Welcome to PyUrTRCon."
-	
+
 
 	def do_gameserver(self, args) :
 		"""Set or display the gameserver address. Supply the address in host:port format to set it."""
@@ -46,13 +47,20 @@ class Console(cmd.Cmd):
 			print "Error encountered! Details: " + str(e)
 
 
+	def complete_rcon(self, primitive, line, start_index, end_index):
+		if primitive:
+			return [ command for command in self.commands if command.startswith(primitive) ]
+		else:
+			return self.addresses
+
+
 	def do_history(self, args) :
 		"""Prints all the previous commands of this session."""
 		print self._hist
 
 
 	def do_help(self, args) :
-		"""Get help information about commands.\n'help' or '?' with no arguments will print the list of available commands.\n'help <command>' or '? <command>' will print help on <command>."""
+		"""'help' or '?' with no arguments will print all commands.\n'help <command>' or '? <command>' will print help on <command>."""
 		cmd.Cmd.do_help(self, args)
 
 
@@ -90,12 +98,23 @@ class Console(cmd.Cmd):
 		print "Unrecognized command. Type \"help\" for instructions."
 
 
+rcon_autocomplete = [
+		"g_nextmap",
+		"g_gametype",
+		"g_gear",
+		"map",
+	] 
 
-if __name__ == '__main__':
-		console = Console()
-		if len(sys.argv) >= 2 :
-			console.server_host = sys.argv[1].split(":")[0] if (':' in sys.argv[1]) else sys.argv[1]
-			console.server_port = int(sys.argv[1].split(":")[1]) if (':' in sys.argv[1]) else 27960
-		if len(sys.argv) >= 3 :
-			console.rcon_password = sys.argv[2]
-		console.cmdloop()
+
+def main() :
+	console = Console()
+	if len(sys.argv) >= 2 :
+		console.server_host = sys.argv[1].split(":")[0] if (':' in sys.argv[1]) else sys.argv[1]
+		console.server_port = int(sys.argv[1].split(":")[1]) if (':' in sys.argv[1]) else 27960
+	if len(sys.argv) >= 3 :
+		console.rcon_password = sys.argv[2]
+	console.commands = rcon_autocomplete
+	console.cmdloop()
+
+
+if __name__ == '__main__': main()
