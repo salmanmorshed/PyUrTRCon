@@ -13,8 +13,8 @@ class Console(cmd.Cmd):
 
 	def __init__(self) :
 		cmd.Cmd.__init__(self)
-		self.prompt = "\n> "
-		self.intro  = "Welcome to PyUrTRCon."
+		self.prompt = "\n>> "
+		self.intro  = "Welcome to PyUrTRCon. Type help for support."
 
 
 	def do_gameserver(self, args) :
@@ -98,14 +98,6 @@ class Console(cmd.Cmd):
 		print "Unrecognized command. Type \"help\" for instructions."
 
 
-rcon_autocomplete = [
-		"g_nextmap",
-		"g_gametype",
-		"g_gear",
-		"map",
-	] 
-
-
 def main() :
 	console = Console()
 	if len(sys.argv) >= 2 :
@@ -113,7 +105,11 @@ def main() :
 		console.server_port = int(sys.argv[1].split(":")[1]) if (':' in sys.argv[1]) else 27960
 	if len(sys.argv) >= 3 :
 		console.rcon_password = sys.argv[2]
-	console.commands = rcon_autocomplete
+	try :
+		import tabsupport
+		console.commands = tabsupport.export_data
+	except Exception, e:
+		console.intro = console.intro + "\n[!] Tab-completion not available."
 	console.cmdloop()
 
 
