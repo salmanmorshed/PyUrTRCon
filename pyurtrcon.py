@@ -10,9 +10,24 @@ import urllib2
 import base64
 
 
+def rcon(server_host, server_port, rcon_password, command):
+    MAGIC = '\377\377\377\377'
+    TIMEOUT = 5
+    try:
+        socket_handle = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        socket_handle.connect((server_host, server_port))
+        socket_handle.settimeout(TIMEOUT)
+        socket_handle.send('{}rcon {} {}'.format(MAGIC, rcon_password, command))
+        (response, address) = socket_handle.recvfrom(1024)
+        socket_handle.close()
+        formatted_response = re.sub(r'\^.', '', response.split('\n')[1])
+        if len(formatted_response):
+            return formatted_response
+    except Exception as e:
+        return 'Error: {}'.format(e.message)
+
+
 class Console(cmd.Cmd):
-    magic = '\377\377\377\377'
-    timeout = 5
     common_commands = ['exec', 'bigtext', 'map', 'cyclemap', 'g_nextmap', 'g_gametype']
     common_addresses = []
     server_host = '127.0.0.1'
@@ -46,18 +61,9 @@ class Console(cmd.Cmd):
 
     def do_rcon(self, args):
         """Send RCon commands to UrT server."""
-        try:
-            socket_handle = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-            socket_handle.connect((self.server_host, self.server_port))
-            socket_handle.settimeout(self.timeout)
-            socket_handle.send('{}rcon {} {}'.format(self.magic, self.rcon_password, args))
-            (response, address) = socket_handle.recvfrom(1024)
-            socket_handle.close()
-            formatted_response = re.sub(r'\^.', '', response.split('\n')[1])
-            if len(formatted_response):
-                print(formatted_response)
-        except Exception as e:
-            print('Error! Details: {}'.format(e.message))
+        response = rcon(self.server_host, self.server_port, self.rcon_password, args)
+        if response is not None:
+            print(response)
 
     def complete_rcon(self, primitive, *_):
         if primitive:
