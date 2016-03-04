@@ -147,12 +147,13 @@ def main():
         console.server_host = sys.argv[1].split(':')[0] if (':' in sys.argv[1]) else sys.argv[1]
         console.server_port = int(sys.argv[1].split(':')[1]) if (':' in sys.argv[1]) else 27960
 
-    gistauth_data = os.environ.get('PYURTRCON_GISTAUTH')
+    ga_server = os.environ.get('PYURTRCON_SERVER')
+    ga_gist_id = os.environ.get('PYURTRCON_GIST_ID')
+    ga_enc_key = os.environ.get('PYURTRCON_ENC_KEY')
 
-    if gistauth_data is not None:
-        server, gist_id, enc_key = gistauth_data.split('|')
-        if server == '{}:{}'.format(console.server_host, console.server_port):
-            ga = GistAuth(gist_id, enc_key)
+    if ga_server is not None and ga_gist_id is not None and ga_enc_key is not None:
+        if ga_server == '{}:{}'.format(console.server_host, console.server_port):
+            ga = GistAuth(ga_gist_id, ga_enc_key)
             console.rcon_password = ga.get_password()
             console.intro += '\n(+) Authenticated using GistAuth.'
 
